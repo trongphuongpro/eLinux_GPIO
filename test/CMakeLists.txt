@@ -13,7 +13,8 @@ add_compile_options(
 	-O2
 )
 
-set(LIB_NAME gpio)
-add_library(${LIB_NAME} STATIC src/gpio.cpp)
-target_include_directories(${LIB_NAME} PUBLIC include)
-target_link_libraries(${LIB_NAME} ${CMAKE_THREAD_LIBS_INIT})
+
+include_directories(../include)
+set(SOURCE ../src/gpio.cpp test.cpp)
+add_executable(testbench ${SOURCE})
+target_link_libraries(testbench ${CMAKE_THREAD_LIBS_INIT})
