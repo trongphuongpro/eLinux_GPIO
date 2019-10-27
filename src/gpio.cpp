@@ -316,9 +316,10 @@ int GPIO::waitEdge() {
 }
 
 
-int GPIO::waitEdge(CallbackType callback) {
+int GPIO::waitEdge(CallbackType callback, void* arg) {
 	this->threadRunning = true;
 	this->callbackFunction = callback;
+	this->callbackArgument = arg;
 
 	if (pthread_create(&this->thread, 
 						NULL,
@@ -345,7 +346,7 @@ void *threadedPoll(void *value) {
 				continue;
 			}
 			if (gpio->interruptEdge == currentEdge || gpio->interruptEdge == BOTH) {
-				gpio->callbackFunction();
+				gpio->callbackFunction(gpio->callbackArgument);
 			}
 			if (currentEdge == RISING) {
 				gpio->setEdgeType(FALLING);

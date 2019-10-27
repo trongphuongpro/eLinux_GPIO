@@ -1,31 +1,45 @@
 #include <unistd.h>
 #include <iostream>
 #include "gpio.h"
+#include <vector>
 
 using namespace BBB;
 using namespace std;
 
 
-int resetAllLeds();
-
-GPIO pin1(67, OUTPUT);
-GPIO pin2(68, OUTPUT);
-GPIO pin3(44, OUTPUT);
-GPIO pin4(26, OUTPUT);
-GPIO pin5(46, OUTPUT);
-GPIO pin6(66, INPUT);
+int resetAllLeds(void*);
+int ledNumber = 5;
 
 int main() {
 
-	pin6.setInterruptEdge(RISING);
-	pin6.setDebounceTime(5);
-	pin6.waitEdge(resetAllLeds);
+	GPIO *pin1 = new GPIO(67, OUTPUT);
+	GPIO *pin2 = new GPIO(68, OUTPUT);
+	GPIO *pin3 = new GPIO(44, OUTPUT);
+	GPIO *pin4 = new GPIO(26, OUTPUT);
+	GPIO *pin5 = new GPIO(46, OUTPUT);
+	GPIO *pin6 = new GPIO(66, INPUT);
 
-	pin1.toggle(1);
-	pin2.toggle(2);
-	pin3.toggle(4);
-	pin4.toggle(8);
-	pin5.toggle(16);
+	//vector<GPIO *> container;
+	// container.push_back(pin1);
+	// container.push_back(pin2);
+	// container.push_back(pin3);
+	// container.push_back(pin4);
+	// container.push_back(pin5);
+
+	GPIO* container[ledNumber] = {pin1, pin2, pin3, pin4, pin5};
+
+	//cout << "[main] address: " << container.data() << endl;
+	//cout << "[main] void*: " << static_cast<void*>(container.data()) << endl;
+
+	pin6->setInterruptEdge(RISING);
+	pin6->setDebounceTime(5);
+	pin6->waitEdge(resetAllLeds, (void*)(container));
+
+	pin1->toggle(1);
+	pin2->toggle(2);
+	pin3->toggle(4);
+	pin4->toggle(8);
+	pin5->toggle(16);
 
 	while (1) {
 
@@ -33,26 +47,24 @@ int main() {
 }
 
 
-int resetAllLeds() {
+int resetAllLeds(void* arg) {
+	GPIO** led = (GPIO**)arg;
+
+	cout << "[resetAllLeds] void*: " << arg << endl;
+	cout << "[resetAllLeds] address: " << led << endl;
+
 	static int count = 0;
 	count++;
 
 	cout << count << endl;
 
-	if (count % 2 == 1) {
-		pin1.stopToggle();
-		pin2.stopToggle();
-		pin3.stopToggle();
-		pin4.stopToggle();
-		pin5.stopToggle();
+	for (int i = 0; i < ledNumber; i++) {
+		if (count % 2 == 1) {
+			led[i]->stopToggle();
+		}
+		else {
+			led[i]->toggle(2);
+		}
 	}
-	else {
-		pin1.toggle(1);
-		pin2.toggle(2);
-		pin3.toggle(4);
-		pin4.toggle(8);
-		pin5.toggle(16);
-	}
-
 	return 0;
 }

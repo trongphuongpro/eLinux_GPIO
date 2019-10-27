@@ -8,7 +8,7 @@
 
 namespace BBB {
 
-typedef int (*CallbackType)();
+typedef int (*CallbackType)(void*);
 
 enum GPIO_DIRECTION {INPUT, OUTPUT};
 enum GPIO_VALUE {LOW=0, HIGH=1};
@@ -43,7 +43,7 @@ public:
 	virtual int setEdgeType(GPIO_EDGE type);
 	virtual GPIO_EDGE getEdgeType();
 	virtual int waitEdge();
-	virtual int waitEdge(CallbackType callback);
+	virtual int waitEdge(CallbackType callback, void* arg);
 	virtual void stopWaitingEdge();
 
 	
@@ -59,7 +59,10 @@ private:
 
 	std::ofstream stream;
 	pthread_t thread;
+
 	CallbackType callbackFunction;
+	void* callbackArgument;
+
 	bool threadRunning;
 	int toggleFrequency;
 	int toggleNumber;
