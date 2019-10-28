@@ -324,7 +324,7 @@ int GPIO::waitEdge(CallbackType callback, void* arg) {
 	if (pthread_create(&this->thread, 
 						NULL,
 						threadedPoll,
-						static_cast<void*>(this))) {
+						this)) {
 
 		perror("GPIO: Failed to create the poll thread");
     	this->threadRunning = false;

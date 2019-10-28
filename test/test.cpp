@@ -1,7 +1,6 @@
 #include <unistd.h>
 #include <iostream>
 #include "gpio.h"
-#include <vector>
 
 using namespace BBB;
 using namespace std;
@@ -19,21 +18,12 @@ int main() {
 	GPIO *pin5 = new GPIO(46, OUTPUT);
 	GPIO *pin6 = new GPIO(66, INPUT);
 
-	//vector<GPIO *> container;
-	// container.push_back(pin1);
-	// container.push_back(pin2);
-	// container.push_back(pin3);
-	// container.push_back(pin4);
-	// container.push_back(pin5);
-
 	GPIO* container[ledNumber] = {pin1, pin2, pin3, pin4, pin5};
-
-	//cout << "[main] address: " << container.data() << endl;
-	//cout << "[main] void*: " << static_cast<void*>(container.data()) << endl;
 
 	pin6->setInterruptEdge(RISING);
 	pin6->setDebounceTime(5);
-	pin6->waitEdge(resetAllLeds, (void*)(container));
+	pin6->waitEdge(resetAllLeds, container);
+
 
 	pin1->toggle(1);
 	pin2->toggle(2);
@@ -50,9 +40,6 @@ int main() {
 int resetAllLeds(void* arg) {
 	GPIO** led = (GPIO**)arg;
 
-	cout << "[resetAllLeds] void*: " << arg << endl;
-	cout << "[resetAllLeds] address: " << led << endl;
-
 	static int count = 0;
 	count++;
 
@@ -63,7 +50,7 @@ int resetAllLeds(void* arg) {
 			led[i]->stopToggle();
 		}
 		else {
-			led[i]->toggle(2);
+			led[i]->toggle(5);
 		}
 	}
 	return 0;
