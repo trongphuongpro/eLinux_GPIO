@@ -14,6 +14,7 @@ enum GPIO_DIRECTION {INPUT, OUTPUT};
 enum GPIO_VALUE {LOW=0, HIGH=1};
 enum GPIO_EDGE {NONE, RISING, FALLING, BOTH};
 
+
 class GPIO {
 public:
 	GPIO(int number, GPIO_DIRECTION mode);
@@ -23,9 +24,10 @@ public:
 
 	virtual int setPinMode(GPIO_DIRECTION mode);
 	virtual GPIO_DIRECTION getPinMode();
+
 	virtual int digitalWrite(GPIO_VALUE value);
-	virtual int toggle();
 	virtual GPIO_VALUE digitalRead();
+
 	virtual int setActiveMode(GPIO_VALUE mode);
 
 	virtual void setDebounceTime(int time);
@@ -34,8 +36,9 @@ public:
 	virtual int writeStream(GPIO_VALUE value);
 	virtual int closeStream();
 
+	virtual int toggle();
 	virtual int toggle(int time);
-	virtual int toggle(int numberOfTimes, int time);
+	virtual int toggle(int numberOfTimes, int frequency);
 	virtual void changeToggleFrequency(int time);
 	virtual void stopToggle();
 
@@ -43,10 +46,9 @@ public:
 	virtual int setEdgeType(GPIO_EDGE type);
 	virtual GPIO_EDGE getEdgeType();
 	virtual int waitEdge();
-	virtual int waitEdge(CallbackType callback, void* arg);
+	virtual int onInterrupt(CallbackType callback, void* arg);
 	virtual void stopWaitingEdge();
 
-	
 
 private:
 	int write(std::string path, std::string filename, std::string value);

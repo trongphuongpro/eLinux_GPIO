@@ -69,7 +69,7 @@ int GPIO::write(string path, string filename, string value) {
 int GPIO::write(string path, string filename, int value){
    stringstream s;
    s << value;
-   return this->write(path, filename, s.str());
+   return write(path, filename, s.str());
 }
 
 
@@ -88,17 +88,17 @@ string GPIO::read(string path, string filename) {
 
 int GPIO::setPinMode(GPIO_DIRECTION mode) {
 	if (mode == INPUT) {
-		return this->write(this->path, "direction", "in");
+		return write(this->path, "direction", "in");
 	}
 	if (mode == OUTPUT) {
-		return this->write(this->path, "direction", "out");
+		return write(this->path, "direction", "out");
 	}
 	return -1;
 }
 
 
 GPIO_DIRECTION GPIO::getPinMode() {
-	string input = this->read(this->path, "direction");
+	string input = read(this->path, "direction");
 	if (input == "in")
 		return INPUT;
 	else
@@ -108,17 +108,17 @@ GPIO_DIRECTION GPIO::getPinMode() {
 
 int GPIO::digitalWrite(GPIO_VALUE value) {
 	if (value == LOW) {
-		return this->write(this->path, "value", "0");
+		return write(this->path, "value", "0");
 	}
 	if (value == HIGH) {
-		return this->write(this->path, "value", "1");
+		return write(this->path, "value", "1");
 	}
 	return -1;
 }
 
 
 GPIO_VALUE GPIO::digitalRead() {
-	string input = this->read(this->path, "value");
+	string input = read(this->path, "value");
 	if (input == "0")
 		return LOW;
 	else
@@ -134,23 +134,23 @@ void GPIO::setInterruptEdge(GPIO_EDGE type) {
 
 int GPIO::setEdgeType(GPIO_EDGE type) {
 	if (type == NONE) {
-		return this->write(this->path, "edge", "none");
+		return write(this->path, "edge", "none");
 	}
 	if (type == RISING) {
-		return this->write(this->path, "edge", "rising");
+		return write(this->path, "edge", "rising");
 	}
 	if (type == FALLING) {
-		return this->write(this->path, "edge", "falling");
+		return write(this->path, "edge", "falling");
 	}
 	if (type == BOTH) {
-		return this->write(this->path, "edge", "both");
+		return write(this->path, "edge", "both");
 	}
 	return -1;
 }
 
 
 GPIO_EDGE GPIO::getEdgeType() {
-	string input = this->read(this->path, "edge");
+	string input = read(this->path, "edge");
 	if (input == "rising") 
 		return RISING;
 	else if (input == "falling") 
@@ -164,29 +164,29 @@ GPIO_EDGE GPIO::getEdgeType() {
 
 int GPIO::setActiveMode(GPIO_VALUE mode) {
 	if (mode == LOW) {
-		return this->write(this->path, "active_low", "1");
+		return write(this->path, "active_low", "1");
 	}
 	else if (mode == HIGH) {
-		return this->write(this->path, "active_low", "0");
+		return write(this->path, "active_low", "0");
 	}
 	return 0;
 }
 
 
 int GPIO::openStream() {
-	stream.open((this->path + "value").c_str());
+	this->stream.open((this->path + "value").c_str());
 	return 0;
 }
 
 
 int GPIO::writeStream(GPIO_VALUE value) {
-	stream << value << flush;
+	this->stream << value << flush;
 	return 0;
 }
 
 
 int GPIO::closeStream() {
-	stream.close();
+	this->stream.close();
 	return 0;
 }
 
@@ -217,9 +217,9 @@ int GPIO::toggle(int numberOfTimes, int frequency) {
 		return -1;
 	}
 	
-	toggleNumber = numberOfTimes;
-	toggleFrequency = frequency;
-	threadRunning = true;
+	this->toggleNumber = numberOfTimes;
+	this->toggleFrequency = frequency;
+	this->threadRunning = true;
 
 	if (pthread_create(&this->thread, 
 						NULL, 
@@ -227,7 +227,7 @@ int GPIO::toggle(int numberOfTimes, int frequency) {
 						static_cast<void*>(this))) {
 		
 		perror("GPIO: Failed to create the toggle thread");
-		threadRunning = false;
+		this->threadRunning = false;
 		return -1;
 	}
 	
@@ -316,7 +316,7 @@ int GPIO::waitEdge() {
 }
 
 
-int GPIO::waitEdge(CallbackType callback, void* arg) {
+int GPIO::onInterrupt(CallbackType callback, void* arg) {
 	this->threadRunning = true;
 	this->callbackFunction = callback;
 	this->callbackArgument = arg;
