@@ -25,8 +25,8 @@ public:
 	virtual int setPinMode(GPIO_DIRECTION mode);
 	virtual GPIO_DIRECTION getPinMode();
 
-	virtual int digitalWrite(GPIO_VALUE value);
-	virtual GPIO_VALUE digitalRead();
+	virtual int write(GPIO_VALUE value);
+	virtual GPIO_VALUE read();
 
 	virtual int setActiveMode(GPIO_VALUE mode);
 
@@ -42,19 +42,13 @@ public:
 	virtual void changeToggleFrequency(int time);
 	virtual void stopToggle();
 
-	virtual void setInterruptEdge(GPIO_EDGE type);
-	virtual int setEdgeType(GPIO_EDGE type);
-	virtual GPIO_EDGE getEdgeType();
+	virtual void setInterruptMode(GPIO_EDGE type);
 	virtual int waitEdge();
 	virtual int onInterrupt(CallbackType callback, void* arg);
-	virtual void stopWaitingEdge();
+	virtual void stopInterrupt();
 
 
 private:
-	int write(std::string path, std::string filename, std::string value);
-	int write(std::string path, std::string filename, int value);
-	std::string read(std::string path, std::string filename);
-
 	int pin, debounceTime;
 	GPIO_EDGE interruptEdge;
 	std::string name, path;
@@ -69,6 +63,12 @@ private:
 	int toggleFrequency;
 	int toggleNumber;
 
+	int writeFile(std::string path, std::string filename, std::string value);
+	int writeFile(std::string path, std::string filename, int value);
+	std::string readFile(std::string path, std::string filename);
+
+	int setEdgeType(GPIO_EDGE type);
+	GPIO_EDGE getEdgeType();
 
 	friend void *threadedPoll(void *value);
 	friend void *threadedToggle(void *value);

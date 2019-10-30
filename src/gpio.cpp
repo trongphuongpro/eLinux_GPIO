@@ -52,7 +52,7 @@ void GPIO::setDebounceTime(int time) {
 }
 
 
-int GPIO::write(string path, string filename, string value) {
+int GPIO::writeFile(string path, string filename, string value) {
 	ofstream fs;
 	fs.open((path + filename).c_str());
 	if (!fs.is_open()) {
@@ -66,14 +66,14 @@ int GPIO::write(string path, string filename, string value) {
 }
 
 
-int GPIO::write(string path, string filename, int value){
+int GPIO::writeFile(string path, string filename, int value){
    stringstream s;
    s << value;
-   return write(path, filename, s.str());
+   return writeFile(path, filename, s.str());
 }
 
 
-string GPIO::read(string path, string filename) {
+string GPIO::readFile(string path, string filename) {
 	ifstream fs;
 	fs.open((path + filename).c_str());
 	if (!fs.is_open()) {
@@ -88,17 +88,17 @@ string GPIO::read(string path, string filename) {
 
 int GPIO::setPinMode(GPIO_DIRECTION mode) {
 	if (mode == INPUT) {
-		return write(this->path, "direction", "in");
+		return writeFile(this->path, "direction", "in");
 	}
 	if (mode == OUTPUT) {
-		return write(this->path, "direction", "out");
+		return writeFile(this->path, "direction", "out");
 	}
 	return -1;
 }
 
 
 GPIO_DIRECTION GPIO::getPinMode() {
-	string input = read(this->path, "direction");
+	string input = readFile(this->path, "direction");
 	if (input == "in")
 		return INPUT;
 	else
@@ -106,19 +106,19 @@ GPIO_DIRECTION GPIO::getPinMode() {
 }
 
 
-int GPIO::digitalWrite(GPIO_VALUE value) {
+int GPIO::write(GPIO_VALUE value) {
 	if (value == LOW) {
-		return write(this->path, "value", "0");
+		return writeFile(this->path, "value", "0");
 	}
 	if (value == HIGH) {
-		return write(this->path, "value", "1");
+		return writeFile(this->path, "value", "1");
 	}
 	return -1;
 }
 
 
-GPIO_VALUE GPIO::digitalRead() {
-	string input = read(this->path, "value");
+GPIO_VALUE GPIO::read() {
+	string input = readFile(this->path, "value");
 	if (input == "0")
 		return LOW;
 	else
@@ -126,7 +126,7 @@ GPIO_VALUE GPIO::digitalRead() {
 }
 
 
-void GPIO::setInterruptEdge(GPIO_EDGE type) {
+void GPIO::setInterruptMode(GPIO_EDGE type) {
 	this->interruptEdge = type;
 	this->setEdgeType(type);
 }
@@ -134,23 +134,23 @@ void GPIO::setInterruptEdge(GPIO_EDGE type) {
 
 int GPIO::setEdgeType(GPIO_EDGE type) {
 	if (type == NONE) {
-		return write(this->path, "edge", "none");
+		return writeFile(this->path, "edge", "none");
 	}
 	if (type == RISING) {
-		return write(this->path, "edge", "rising");
+		return writeFile(this->path, "edge", "rising");
 	}
 	if (type == FALLING) {
-		return write(this->path, "edge", "falling");
+		return writeFile(this->path, "edge", "falling");
 	}
 	if (type == BOTH) {
-		return write(this->path, "edge", "both");
+		return writeFile(this->path, "edge", "both");
 	}
 	return -1;
 }
 
 
 GPIO_EDGE GPIO::getEdgeType() {
-	string input = read(this->path, "edge");
+	string input = readFile(this->path, "edge");
 	if (input == "rising") 
 		return RISING;
 	else if (input == "falling") 
@@ -164,10 +164,10 @@ GPIO_EDGE GPIO::getEdgeType() {
 
 int GPIO::setActiveMode(GPIO_VALUE mode) {
 	if (mode == LOW) {
-		return write(this->path, "active_low", "1");
+		return writeFile(this->path, "active_low", "1");
 	}
 	else if (mode == HIGH) {
-		return write(this->path, "active_low", "0");
+		return writeFile(this->path, "active_low", "0");
 	}
 	return 0;
 }
@@ -197,10 +197,10 @@ int GPIO::toggle() {
 		return -1;
 	}
 	
-	if (digitalRead() == LOW)
-		digitalWrite(HIGH);
+	if (read() == LOW)
+		write(HIGH);
 	else
-		digitalWrite(LOW);
+		write(LOW);
 
 	return 0;
 }
@@ -237,14 +237,14 @@ int GPIO::toggle(int numberOfTimes, int frequency) {
 
 void *threadedToggle(void *value) {
 	GPIO *gpio = static_cast<GPIO*>(value);
-	bool isHigh = (bool)gpio->digitalRead();
+	bool isHigh = (bool)gpio->read();
 
 	while (gpio->threadRunning) {
 		if (isHigh) {
-			gpio->digitalWrite(LOW);
+			gpio->write(LOW);
 		}
 		else {
-			gpio->digitalWrite(HIGH);
+			gpio->write(HIGH);
 		}
 		usleep(500000 / gpio->toggleFrequency);
 		isHigh = !isHigh;
@@ -362,7 +362,8 @@ void *threadedPoll(void *value) {
 }
 
 
-void GPIO::stopWaitingEdge() {
+void GPIO::stopInterrupt() {
 	this->threadRunning = false;
 }
+
 } /* namespace BBB */

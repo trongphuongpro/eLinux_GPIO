@@ -20,7 +20,7 @@ int main() {
 
 	GPIO* container[ledNumber] = {pin1, pin2, pin3, pin4, pin5};
 
-	pin6->setInterruptEdge(RISING);
+	pin6->setInterruptMode(RISING);
 	pin6->setDebounceTime(10);
 	pin6->onInterrupt(resetAllLeds, container);
 
