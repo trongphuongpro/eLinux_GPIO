@@ -44,7 +44,7 @@ public:
 
 	virtual void setInterruptMode(GPIO_EDGE type);
 	virtual int waitEdge();
-	virtual int onInterrupt(CallbackType callback, void* arg);
+	virtual int onInterrupt(CallbackType callback, void* arg=NULL);
 	virtual void stopInterrupt();
 
 
