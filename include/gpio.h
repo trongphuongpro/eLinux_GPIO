@@ -51,7 +51,7 @@ public:
 private:
 	int pin, debounceTime;
 	GPIO_EDGE interruptEdge;
-	std::string name, path;
+	std::string path;
 
 	std::ofstream stream;
 	pthread_t thread;

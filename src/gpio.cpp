@@ -24,12 +24,10 @@ GPIO::GPIO(int pin, GPIO_DIRECTION mode) {
 	this->threadRunning = false;
 	this->interruptEdge = NONE;
 
-	ostringstream s;
-	s << "gpio" << pin;
-	cout << s.str() << " created" << endl;
+	string filename = "gpio" + to_string(pin);
+	cout << "Create object " << filename << endl;
 
-	this->name = string(s.str());
-	this->path = GPIO_PATH + this->name + "/";
+	this->path = GPIO_PATH + filename + "/";
 
 	setPinMode(mode);
 	
