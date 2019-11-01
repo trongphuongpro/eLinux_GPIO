@@ -3,6 +3,7 @@
 
 #include <string>
 #include <fstream>
+#include "pinmap.h"
 
 #define GPIO_PATH	"/sys/class/gpio/"
 

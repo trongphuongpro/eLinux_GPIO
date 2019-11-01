@@ -11,12 +11,12 @@ int ledNumber = 5;
 
 int main() {
 
-	GPIO *pin1 = new GPIO(67, OUTPUT);
-	GPIO *pin2 = new GPIO(68, OUTPUT);
-	GPIO *pin3 = new GPIO(44, OUTPUT);
-	GPIO *pin4 = new GPIO(26, OUTPUT);
-	GPIO *pin5 = new GPIO(46, OUTPUT);
-	GPIO *pin6 = new GPIO(66, INPUT);
+	GPIO *pin1 = new GPIO(P8_46, OUTPUT);
+	GPIO *pin2 = new GPIO(P8_44, OUTPUT);
+	GPIO *pin3 = new GPIO(P8_42, OUTPUT);
+	GPIO *pin4 = new GPIO(P8_40, OUTPUT);
+	GPIO *pin5 = new GPIO(P8_38, OUTPUT);
+	GPIO *pin6 = new GPIO(P8_36, INPUT);
 
 	GPIO* container[ledNumber] = {pin1, pin2, pin3, pin4, pin5};
 
