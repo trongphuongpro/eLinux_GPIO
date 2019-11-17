@@ -15,14 +15,14 @@ using namespace std;
 
 namespace BBB {
 
-GPIO::GPIO(int pin, GPIO_DIRECTION mode) {
+GPIO::GPIO(int pin, GPIO::DIRECTION mode) {
 	this->pin = pin;
 	this->debounceTime = 0;
 	this->toggleFrequency = 0;
 	this->toggleNumber = 0;
 	this->callbackFunction = NULL;
 	this->threadRunning = false;
-	this->interruptEdge = NONE;
+	this->interruptEdge = GPIO::NONE;
 
 	string filename = "gpio" + to_string(pin);
 	cout << "Create object " << filename << endl;
@@ -84,18 +84,18 @@ string GPIO::readFile(string path, string filename) {
 }
 
 
-int GPIO::setPinMode(GPIO_DIRECTION mode) {
-	if (mode == INPUT) {
+int GPIO::setPinMode(GPIO::DIRECTION mode) {
+	if (mode == GPIO::INPUT) {
 		return writeFile(this->path, "direction", "in");
 	}
-	if (mode == OUTPUT) {
+	if (mode == GPIO::OUTPUT) {
 		return writeFile(this->path, "direction", "out");
 	}
 	return -1;
 }
 
 
-GPIO_DIRECTION GPIO::getPinMode() {
+GPIO::DIRECTION GPIO::getPinMode() {
 	string input = readFile(this->path, "direction");
 	if (input == "in")
 		return INPUT;
@@ -104,67 +104,67 @@ GPIO_DIRECTION GPIO::getPinMode() {
 }
 
 
-int GPIO::write(GPIO_VALUE value) {
-	if (value == LOW) {
+int GPIO::write(GPIO::VALUE value) {
+	if (value == GPIO::LOW) {
 		return writeFile(this->path, "value", "0");
 	}
-	if (value == HIGH) {
+	if (value == GPIO::HIGH) {
 		return writeFile(this->path, "value", "1");
 	}
 	return -1;
 }
 
 
-GPIO_VALUE GPIO::read() {
+GPIO::VALUE GPIO::read() {
 	string input = readFile(this->path, "value");
 	if (input == "0")
-		return LOW;
+		return GPIO::LOW;
 	else
-		return HIGH;
+		return GPIO::HIGH;
 }
 
 
-void GPIO::setInterruptMode(GPIO_EDGE type) {
+void GPIO::setInterruptMode(GPIO::EDGE type) {
 	this->interruptEdge = type;
 	this->setEdgeType(type);
 }
 
 
-int GPIO::setEdgeType(GPIO_EDGE type) {
-	if (type == NONE) {
+int GPIO::setEdgeType(GPIO::EDGE type) {
+	if (type == GPIO::NONE) {
 		return writeFile(this->path, "edge", "none");
 	}
-	if (type == RISING) {
+	if (type == GPIO::RISING) {
 		return writeFile(this->path, "edge", "rising");
 	}
-	if (type == FALLING) {
+	if (type == GPIO::FALLING) {
 		return writeFile(this->path, "edge", "falling");
 	}
-	if (type == BOTH) {
+	if (type == GPIO::BOTH) {
 		return writeFile(this->path, "edge", "both");
 	}
 	return -1;
 }
 
 
-GPIO_EDGE GPIO::getEdgeType() {
+GPIO::EDGE GPIO::getEdgeType() {
 	string input = readFile(this->path, "edge");
 	if (input == "rising") 
-		return RISING;
+		return GPIO::RISING;
 	else if (input == "falling") 
-		return FALLING;
+		return GPIO::FALLING;
 	else if (input == "both") 
-		return BOTH;
+		return GPIO::BOTH;
 	else 
-		return NONE;
+		return GPIO::NONE;
 }
 
 
-int GPIO::setActiveMode(GPIO_VALUE mode) {
-	if (mode == LOW) {
+int GPIO::setActiveMode(GPIO::VALUE mode) {
+	if (mode == GPIO::LOW) {
 		return writeFile(this->path, "active_low", "1");
 	}
-	else if (mode == HIGH) {
+	else if (mode == GPIO::HIGH) {
 		return writeFile(this->path, "active_low", "0");
 	}
 	return 0;
@@ -177,7 +177,7 @@ int GPIO::openStream() {
 }
 
 
-int GPIO::writeStream(GPIO_VALUE value) {
+int GPIO::writeStream(GPIO::VALUE value) {
 	this->stream << value << flush;
 	return 0;
 }
@@ -190,15 +190,15 @@ int GPIO::closeStream() {
 
 
 int GPIO::toggle() {
-	if (getPinMode() == INPUT) {
+	if (getPinMode() == GPIO::INPUT) {
 		perror("GPIO: Cannot toggle input pin");
 		return -1;
 	}
 	
-	if (read() == LOW)
-		write(HIGH);
+	if (read() == GPIO::LOW)
+		write(GPIO::HIGH);
 	else
-		write(LOW);
+		write(GPIO::LOW);
 
 	return 0;
 }
@@ -210,7 +210,7 @@ int GPIO::toggle(int frequency) {
 
 
 int GPIO::toggle(int numberOfTimes, int frequency) {
-	if (getPinMode() == INPUT) {
+	if (getPinMode() == GPIO::INPUT) {
 		perror("GPIO: Cannot toggle input pin");
 		return -1;
 	}
@@ -239,10 +239,10 @@ void *threadedToggle(void *value) {
 
 	while (gpio->threadRunning) {
 		if (isHigh) {
-			gpio->write(LOW);
+			gpio->write(GPIO::LOW);
 		}
 		else {
-			gpio->write(HIGH);
+			gpio->write(GPIO::HIGH);
 		}
 		usleep(500000 / gpio->toggleFrequency);
 		isHigh = !isHigh;
@@ -269,7 +269,7 @@ void GPIO::stopToggle() {
 
 
 int GPIO::waitEdge() {
-	if (getPinMode() == OUTPUT) {
+	if (getPinMode() == GPIO::OUTPUT) {
 		perror("GPIO: Cannot wait edge on output pin");
 		return -1;
 	}
@@ -338,19 +338,19 @@ void *threadedPoll(void *value) {
 	while (gpio->threadRunning) {
 		if (gpio->waitEdge() == 0) {
 
-			GPIO_EDGE currentEdge = gpio->getEdgeType();
+			GPIO::EDGE currentEdge = gpio->getEdgeType();
 
-			if (gpio->interruptEdge == NONE) {
+			if (gpio->interruptEdge == GPIO::NONE) {
 				continue;
 			}
-			if (gpio->interruptEdge == currentEdge || gpio->interruptEdge == BOTH) {
+			if (gpio->interruptEdge == currentEdge || gpio->interruptEdge == GPIO::BOTH) {
 				gpio->callbackFunction(gpio->callbackArgument);
 			}
-			if (currentEdge == RISING) {
-				gpio->setEdgeType(FALLING);
+			if (currentEdge == GPIO::RISING) {
+				gpio->setEdgeType(GPIO::FALLING);
 			}
-			else if (currentEdge == FALLING) {
-				gpio->setEdgeType(RISING);
+			else if (currentEdge == GPIO::FALLING) {
+				gpio->setEdgeType(GPIO::RISING);
 			}
 		}
 		usleep(gpio->debounceTime * 1000);
