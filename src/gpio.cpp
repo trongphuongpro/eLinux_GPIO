@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
 #include <cstdlib>
 #include <cstdio>
 #include <fcntl.h>
@@ -65,9 +64,7 @@ int GPIO::writeFile(string path, string filename, string value) {
 
 
 int GPIO::writeFile(string path, string filename, int value){
-   stringstream s;
-   s << value;
-   return writeFile(path, filename, s.str());
+   return writeFile(path, filename, to_string(value));
 }
 
 
