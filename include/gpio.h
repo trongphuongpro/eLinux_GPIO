@@ -18,23 +18,23 @@ public:
 	enum VALUE {LOW=0, HIGH=1};
 	enum EDGE {NONE, RISING, FALLING, BOTH};
 
-	GPIO(int number, GPIO::DIRECTION mode);
+	GPIO(int number, DIRECTION mode);
 	~GPIO();
 
 	virtual int getPin();
 
-	virtual int setPinMode(GPIO::DIRECTION mode);
-	virtual GPIO::DIRECTION getPinMode();
+	virtual int setPinMode(DIRECTION mode);
+	virtual DIRECTION getPinMode();
 
-	virtual int write(GPIO::VALUE value);
-	virtual GPIO::VALUE read();
+	virtual int write(VALUE value);
+	virtual VALUE read();
 
-	virtual int setActiveMode(GPIO::VALUE mode);
+	virtual int setActiveMode(VALUE mode);
 
 	virtual void setDebounceTime(int time);
 
 	virtual int openStream();
-	virtual int writeStream(GPIO::VALUE value);
+	virtual int writeStream(VALUE value);
 	virtual int closeStream();
 
 	virtual int toggle();
@@ -43,7 +43,7 @@ public:
 	virtual void changeToggleFrequency(int time);
 	virtual void stopToggle();
 
-	virtual void setInterruptMode(GPIO::EDGE type);
+	virtual void setInterruptMode(EDGE type);
 	virtual int waitEdge();
 	virtual int onInterrupt(CallbackType callback, void* arg=NULL);
 	virtual void stopInterrupt();
@@ -51,7 +51,7 @@ public:
 
 private:
 	int pin, debounceTime;
-	GPIO::EDGE interruptEdge;
+	EDGE interruptEdge;
 	std::string path;
 
 	std::ofstream stream;
@@ -68,8 +68,8 @@ private:
 	int writeFile(std::string path, std::string filename, int value);
 	std::string readFile(std::string path, std::string filename);
 
-	int setEdgeType(GPIO::EDGE type);
-	GPIO::EDGE getEdgeType();
+	int setEdgeType(EDGE type);
+	EDGE getEdgeType();
 
 	friend void *threadedPoll(void *value);
 	friend void *threadedToggle(void *value);
@@ -80,4 +80,4 @@ void *threadedToggle(void *value);
 
 } /* namespace BBB */
 
-#endif /* __GPIO::_ */
+#endif /* __GPIO__ */
