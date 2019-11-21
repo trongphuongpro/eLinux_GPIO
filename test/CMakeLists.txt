@@ -6,16 +6,16 @@ set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_CXX_COMPILER arm-g++)
 set(CMAKE_C_COMPILER arm-gcc)
 
-add_compile_options(
-	-std=gnu++11
-	-Wall
-	-Werror
-	-O2
+
+set(TARGET testbench)
+set(SOURCE ../src/gpio.cpp test.cpp)
+add_executable(${TARGET} ${SOURCE})
+target_link_libraries(${TARGET} ${CMAKE_THREAD_LIBS_INIT})
+target_include_directories(${TARGET} PUBLIC ../include)
+target_compile_options(${TARGET} PUBLIC -std=gnu++11
+										-Wall
+										-Werror
+										-O2
 )
 
-
-include_directories(../include)
-set(SOURCE ../src/gpio.cpp test.cpp)
-add_executable(testbench ${SOURCE})
-target_link_libraries(testbench ${CMAKE_THREAD_LIBS_INIT})
-install(TARGETS testbench DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+install(TARGETS ${TARGET} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
