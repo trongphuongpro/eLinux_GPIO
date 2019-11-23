@@ -219,7 +219,7 @@ int GPIO::toggle(int numberOfTimes, int frequency) {
 	if (pthread_create(&this->thread, 
 						NULL, 
 						threadedToggle, 
-						static_cast<void*>(this))) {
+						this)) {
 		
 		perror("GPIO: Failed to create the toggle thread");
 		this->threadRunning = false;
