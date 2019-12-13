@@ -168,24 +168,6 @@ int GPIO::setActiveMode(VALUE mode) {
 }
 
 
-int GPIO::openStream() {
-	this->stream.open((this->path + "value").c_str());
-	return 0;
-}
-
-
-int GPIO::writeStream(VALUE value) {
-	this->stream << value << flush;
-	return 0;
-}
-
-
-int GPIO::closeStream() {
-	this->stream.close();
-	return 0;
-}
-
-
 int GPIO::toggle() {
 	if (getPinMode() == INPUT) {
 		perror("GPIO: Cannot toggle input pin");

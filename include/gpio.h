@@ -2,7 +2,6 @@
 #define __GPIO__
 
 #include <string>
-#include <fstream>
 #include "pinmap.h"
 
 #define GPIO_PATH	"/sys/class/gpio/"
@@ -33,9 +32,6 @@ public:
 
 	virtual void setDebounceTime(int time);
 
-	virtual int openStream();
-	virtual int writeStream(VALUE value);
-	virtual int closeStream();
 
 	virtual int toggle();
 	virtual int toggle(int time);
@@ -54,7 +50,6 @@ private:
 	EDGE interruptEdge;
 	std::string path;
 
-	std::ofstream stream;
 	pthread_t thread;
 
 	CallbackType callbackFunction;
