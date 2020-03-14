@@ -253,7 +253,7 @@ int GPIO::waitEdge() {
 		return -1;
 	}
 
-	int fd, i, epollfd, count = 0;
+	int fd, epollfd;
 	struct epoll_event ev;
 	epollfd = epoll_create(1);
 
@@ -264,6 +264,8 @@ int GPIO::waitEdge() {
 
 	if ((fd = open((this->path + "value").c_str(), O_RDONLY | O_NONBLOCK)) == -1) {
 		perror("GPIO: Failed to open file");
+		close(epollfd);
+
     	return -1;
 	}
 
@@ -272,23 +274,33 @@ int GPIO::waitEdge() {
 
 	if (epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev) == -1) {
 		perror("GPIO: Failed to add control interface");
+		close(epollfd);
+		close(fd);
+
        	return -1;
 	}
 
-	while (count <= 1) {
-		i = epoll_wait(epollfd, &ev, 1, -1);
-		if (i == -1) {
+	int ret;
+	int counter = 0;
+
+	while (counter < 2) {
+		ret = epoll_warett(epollfd, &ev, 1, -1);
+
+		if (ret == -1) {
 			perror("GPIO: Poll Wait fail");
-			count = 5;
+			close(epollfd);
+			close(fd);
+
+			return -1;
 		}
 		else {
-			count++;
+			counter++;
 		}
 	}
 
+	close(epollfd);
 	close(fd);
-	if (count == 5)
-		return -1;
+
 	return 0;
 }
 
