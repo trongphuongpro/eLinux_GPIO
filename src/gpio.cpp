@@ -284,7 +284,7 @@ int GPIO::waitEdge() {
 	int counter = 0;
 
 	while (counter < 2) {
-		ret = epoll_warett(epollfd, &ev, 1, -1);
+		ret = epoll_wait(epollfd, &ev, 1, -1);
 
 		if (ret == -1) {
 			perror("GPIO: Poll Wait fail");
